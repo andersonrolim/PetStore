@@ -24,7 +24,7 @@ public class Pet {
     }
 
     // Incluir - Create - Post
-    @Test // Identifica o método ou função como um teste para o TestNG
+    @Test(priority = 1) // Identifica o método ou função como um teste para o TestNG
     public void incluirPet() throws IOException {
         String jsonBody = lerJson("data/createPet.json");
 
@@ -48,11 +48,13 @@ public class Pet {
         ;
     }
 
-    // Incluir - Create - Post
-    @Test // Identifica o método ou função como um teste para o TestNG
+    // Consulta - Read - Post
+    @Test(priority = 2) // Identifica o método ou função como um teste para o TestNG
     public void consultarPet() throws IOException {
-        String jsonBody = lerJson("data/readPet.json");
-        System.out.println("Nosso Json ReadPet: "+jsonBody);
+        String petId = "121244";
+
+//        String jsonBody = lerJson("data/readPet.json");
+//        System.out.println("Nosso Json ReadPet: "+jsonBody);
 
         // Sintaxe Gherkin
         // Dado - Quando - Então
@@ -61,9 +63,35 @@ public class Pet {
         given() // Dado
                 .contentType("application/json") // comum em API REST - antigas era "text/xml"
                 .log().all()
-                .body(jsonBody)
+        .when() // Quando
+                .get(uri+"/"+petId)
+        .then() // Então
+                .log().all()
+                .statusCode(200)
+                .body("name",is("Husky Siberiano"))
+                .body("status",is("available"))
+                .body("category.name", is("dog"))
+                .body("tags.name", contains("frio"))
+        ;
+    }
+
+    // Delete - Delete
+    @Test(priority = 3) // Identifica o método ou função como um teste para o TestNG
+    public void deletarPet() throws IOException {
+        String petId = "121244";
+
+//        String jsonBody = lerJson("data/readPet.json");
+//        System.out.println("Nosso Json ReadPet: "+jsonBody);
+
+        // Sintaxe Gherkin
+        // Dado - Quando - Então
+        // Given - When - Then
+
+        given() // Dado
+                .contentType("application/json") // comum em API REST - antigas era "text/xml"
+                .log().all()
                 .when() // Quando
-                .post(uri)
+                .delete(uri+"/"+petId)
                 .then() // Então
                 .log().all()
                 .statusCode(200)
